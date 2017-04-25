@@ -1,0 +1,20 @@
+a) Original:
+tstart 679
+tend 1216691
+Avg. execution time: 0.000121601 msec
+
+b) Using Registers:
+tstart 631
+tend 663540
+Avg. execution time: 6.62909e-05 msec
+
+c) Adding n:
+tstart 967
+tend 318760
+Avg. execution time: 3.17793e-05 msec
+
+d) Using registers can significantly speed up run time by several magnitudes
+when used for reading/writing in memory, as can be seen with changing the type
+of a and b. Using register values for operations that don't require read/write
+with memory also speeds up execution time, as can be seen with n, but not nearly 
+as much.
