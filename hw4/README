@@ -1,3 +1,4 @@
+Problem 3
 a) Original:
 tstart 679
 tend 1216691
@@ -18,3 +19,11 @@ when used for reading/writing in memory, as can be seen with changing the type
 of a and b. Using register values for operations that don't require read/write
 with memory also speeds up execution time, as can be seen with n, but not nearly 
 as much.
+
+Problem 4
+This program first prompts the user for extract mode or set mode.
+The program then prompts the user for a number to manipulate.
+The program asks for which bit index to use (0 being the LSB).
+If the mode is extract, the program prints the value at the specified index.
+Else if the mode is set, the program prints the new value of the number after the index is set to 1.
+
