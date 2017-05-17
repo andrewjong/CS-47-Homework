@@ -66,8 +66,8 @@ addop:
 	addi $s0, $s0, 1					# 	  increment counter (i)
 	li $t0, 32						#	  the size of MIPS ints
 	bne $s0, $t0, addop					#	  repeat if i!=32
-#	move $v1, $s2
-jr $ra
+	move $v1, $s2
+j end
 
 # mulop:
 # # jal mul_unsigned
