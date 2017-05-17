@@ -77,16 +77,19 @@ j end
 mulop:
 	li $t0, '.' 	# THIS IS WHERE MULOP STARTS
 
-	result_sign($a0, $a1)	# get the sign of multiplying the two numbers
-	move $s0, $v0
+	move $s1, $a0			# in $s1, (N1) store $a0
+	move $s2, $a1			# in $s2, (N2) store $a1
 
-	abs_val($a0)			# find the absolute value of N1, already in a0
+	result_sign($s1, $s2)	# get the sign of multiplying the two numbers
+	move $s0, $v0			# in $s0, (S) store the sign
+
+	abs_val($s1)			# find the absolute value of N1
 	move $s1, $v0
-
-	abs_val($a1)
+	abs_val($s2)			# find the absolute value of N2
+	move $s2, $v0
 
 	move $a0, $s1			# put |N1| in $a0
-	move $a1, $v0			# put |N2| in $a1
+	move $a1, $s2			# put |N2| in $a1
 
 	jal mul_unsigned		# do an unsigned multiplication
 
