@@ -86,11 +86,11 @@ mulop:
 
 	abs_val($a0)			# find the absolute value of N1, already in a0
 	move $s1, $v0
-
 	abs_val($a1)
+	move $s2, $v0
 
 	move $a0, $s1			# put |N1| in $a0
-	move $a1, $v0			# put |N2| in $a1
+	move $a1, $s2			# put |N2| in $a1
 
 	jal mul_unsigned		# do an unsigned multiplication
 
@@ -129,8 +129,8 @@ mul_unsigned:
 		srl $s4, $s4, 1			# L = L >> 1
 
 		extract_n($s1, $zero)		# H[0] 
-		li $t0, 31			# the index for setting at L
-		set_n_with($s4, $t0, $v0)	# L[31] = H[0]
+		li $t9, 31			# the index for setting at L
+		set_n_with($s4, $t9, $v0)	# L[31] = H[0]
 		move $s4, $v0			# overwrite L with new value
 
 		srl $s1, $s1, 1			# H = H >> 1
@@ -153,8 +153,6 @@ mul_unsigned:
 jr $ra # end
 
 divop:
-	li $t0, '/'
-	jal au_normal
 j end
 
 end: 

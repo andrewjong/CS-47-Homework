@@ -37,7 +37,7 @@
 .end_macro
 
 .macro twos_comp($num)
-    not $a0, $a0            # 1's complement
+    not $a0, $num            # 1's complement
     li $a1, 1
     li $a2, '+'
     jal au_logical          # add 1 as 2's complement
@@ -55,6 +55,8 @@
 .macro abs_val($num)
     move $v0, $num
     bgez $num, fi_abs_val         # don't flip if less than zero
+#    li $t0, -1
+#    mul $v0, $num, $t0
     twos_comp($num)
     fi_abs_val:
 .end_macro
