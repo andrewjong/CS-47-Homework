@@ -29,9 +29,11 @@
 
 .macro bit_replicator($arg)
 	bnez $arg, replicate_1
-		move $v0, $zero
+		move $v0, $zero		# set to zero
+		j fi_bit_replicator	# and return
 	replicate_1:
-		li $v0, -1 # -1 is all 1s in binary 2's complement
+		li $v0, -1 		# -1 is all 1s in binary 2's complement
+	fi_bit_replicator:
 .end_macro
 
 .macro twos_comp($num)

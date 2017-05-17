@@ -32,16 +32,16 @@ au_logical:
 
 
 	li $t0, '+'						# determine which opcode to perform
-	beq $a2, $t0, addorsub
+	beq $a2, $t0, addsubop
 	li $t0, '-'
-	beq $a2, $t0, addorsub
+	beq $a2, $t0, addsubop
 	li $t0, '*'
 	beq $a2, $t0, mulop
 	li $t0, '/'
 	beq $a2, $t0, divop
 	j end 							# skip everything if no opcode
 
-addorsub:
+addsubop:
 	move $s0, $zero						# in $s0, initialize the counter (i)  with 0 
 	move $s1, $zero						# in $s1, initialize the sum (s) as 0 
 	move $s2, $zero						# in $s2, establish the carry value (c) 
@@ -77,10 +77,10 @@ j end
 mulop:
 	li $t0, '.' 	# THIS IS WHERE MULOP STARTS
 
-	li $t3, 31				# bit to extract for sign
+	li $t3, 31			# bit to extract for sign
 	extract_n($a0, $t3)		# extract for number 1
 	move $t4, $v0			# store in $t4
-	extract_n($a1, $t3) 	# extract for number 2
+	extract_n($a1, $t3) 		# extract for number 2
 	move $t5, $v0
 	xor $s0, $t4, $t5		# in $s0, xor to find out sign
 
@@ -94,7 +94,7 @@ mulop:
 
 	jal mul_unsigned		# do an unsigned multiplication
 
-	beq $s0, $zero, fi_mulop # if positive number, jump to end
+	beq $s0, $zero, fi_mulop 	# if positive number, jump to end
 	twos_comp_64($v0, $v1)
 
 	fi_mulop:
@@ -122,22 +122,22 @@ mul_unsigned:
 		extract_n($s4, $zero)		# extract the 0th bit from L and replicate it
 		bit_replicator($v0) 		# replicate it. R = {32{L[0]}} 
 
-		and $s5, $s3, $v0			# in $s5, (X) = M & R
+		and $s5, $s3, $v0		# in $s5, (X) = M & R
 
-		add $s1, $s1, $s5			# H = H + X
+		add $s1, $s1, $s5		# H = H + X
 
 		srl $s4, $s4, 1			# L = L >> 1
 
 		extract_n($s1, $zero)		# H[0] 
-		li $t0, 31					# the index for setting at L
+		li $t0, 31			# the index for setting at L
 		set_n_with($s4, $t0, $v0)	# L[31] = H[0]
-		move $s4, $v0				# overwrite L with new value
+		move $s4, $v0			# overwrite L with new value
 
 		srl $s1, $s1, 1			# H = H >> 1
 
-		addi $s0, $s0, 1 			# I = I + 1
+		addi $s0, $s0, 1 		# I = I + 1
 
-		li $t0, 32					# set limit to 32
+		li $t0, 32			# set limit to 32
 		bne $s0, $t0, mul_unsigned_loop
 		move $v1, $s1
 		move $v0, $s4
@@ -152,106 +152,9 @@ mul_unsigned:
 	addi $sp, $sp, 28
 jr $ra # end
 
-
-mul_signed:
-
-
-
 divop:
-#	move $s0, $a0 # Dividend (Q)
-#	move $s1, $a1 # Divisor (D)
-#	
-#	# Take two's complement of arguments if negative
-#	bgt $a0, 0, skip_dividend_complement
-#	beq $a0, 0, skip_dividend_complement
-#	twos_comp($a0)
-#	move $s0, $v0
-#	skip_dividend_complement:
-#	
-#	bgt $a1, 0, skip_divisor_complement
-#	beq $a1, 0, skip_divisor_complement
-#	twos_comp($a1)
-#	move $s1, $v0
-#	skip_divisor_complement:
-#	
-#	unsigned_division:
-#		move $s0, $s0 # Dividend (Q)
-#		move $s1, $s1 # Divisor (D)
-#	
-#		move $s2, $zero # Index (I)
-#	
-#		move $s3, $zero # Remainder (R)
-#	
-#		move $s4, $zero # S
-#	
-#		
-#		div_loop:
-#		sll $s3, $s3, 1 # R = R << 1
-#		
-#		### R[0] = Q[31]
-#		srl $s7, $s0, 31
-#		set_n_with($s3, $zero, $s7)
-#		move $s3, $v0
-#		###
-#		
-#		sll $s0, $s0, 1 # Q = Q << 1
-#		
-#		### S = R - D
-#		addi	$sp, $sp, -20
-#		sw	$ra, 20($sp)
-#		sw	$a0, 16($sp)
-#		sw	$a1, 12($sp)
-#		sw	$a2, 8($sp)
-#		
-#		move $a0, $s3
-#		move $a1, $s1
-#		li $a2, '-'
-#		jal au_logical
-#		
-#		move $s4, $v0
-#		
-#		lw	$ra, 20($sp)
-#		lw	$a0, 16($sp)
-#		lw	$a1, 12($sp)
-#		lw	$a2, 8($sp)
-#		addi $sp, $sp, 20
-#		###
-#		
-#		blt $s4, 0, s_less_than_zero
-#		
-#		move $s3, $s4 # R = S
-#		or $s0, $s0, 1 # Q[0] = 1
-#		s_less_than_zero:
-#		
-#		addi $s2, $s2, 1 # Allowed to increment index like this according to Patra's PDF on class modules
-#		bne $s2, 32, div_loop # Keep going until index = 32
-#		
-#	### If quotient is negative, take two's complement of the unsigned_divisor quotient
-#	li $s2, 31
-#	extract_n($a0, $s2)
-#	move $s4, $v0
-#	extract_n($a1, $s2)
-#	xor $s4, $s4, $v0
-#	
-#	beq $s4, 0, skip_quotient_complement
-#	twos_comp($s0)
-#	move $s0, $v0
-#	skip_quotient_complement:
-#	###
-#	
-#	### If dividend is negative, make remainder negative
-#	li $s2, 31
-#	extract_n($a0, $s2)
-#	move $s4, $v0
-#	
-#	beq $s4, 0, skip_remainder_complement
-#	twos_comp($s3)
-#	move $s3, $v0
-#	skip_remainder_complement:
-#	###
-#	
-#	move $v0, $s0
-#	move $v1, $s3
+	li $t0, '/'
+	jal au_normal
 j end
 
 end: 
