@@ -27,6 +27,7 @@
     end_set_n_with:
 .end_macro
 
+# replicates a bit across the entire word, 0 or 1
 .macro bit_replicator($arg)
 	bnez $arg, replicate_1
 		move $v0, $zero		# set to zero
@@ -36,6 +37,17 @@
 	fi_bit_replicator:
 .end_macro
 
+# get sign (+/-) of the result of multiplying or dividing two numbers
+.macro result_sign($n1, $n2)
+	li $t3, 31			# bit to extract for sign
+	extract_n($n1, $t3)		# extract for number 1
+	move $t4, $v0			# store in $t4
+	extract_n($n2, $t3) 		# extract for number 2
+	move $t5, $v0
+	xor $v0, $t4, $t5		# in $s0, xor to find out sign
+.end_macro
+
+# performs 2s complement to get the negative of a number
 .macro twos_comp($num)
     not $a0, $a0            # 1's complement
     li $a1, 1
@@ -43,6 +55,7 @@
     jal au_logical          # add 1 as 2's complement
 .end_macro
 
+# performs 2s complement on a 64 bit number
 .macro twos_comp_64($low, $high)
     twos_comp($low)
     move $t0, $v1           # get the carry value from twos
@@ -52,6 +65,7 @@
     fi_twos_comp_64:
 .end_macro
 
+# returns the absolute value of a number
 .macro abs_val($num)
     move $v0, $num
     bgez $num, fi_abs_val         # don't flip if less than zero
