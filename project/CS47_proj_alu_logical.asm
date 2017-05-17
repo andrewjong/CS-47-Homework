@@ -75,51 +75,28 @@ addop:
 j end
 
 mulop:
-li $t0, '.' 	# THIS IS WHERE MULOP STARTS
+	li $t0, '.' 	# THIS IS WHERE MULOP STARTS
 
-	li $t3, 31			# bit to extract for sign
-	extract_n($a0, $t3)		# extract for number 1
-	move $t4, $v0			# store in $t4
-	extract_n($a1, $t3) 		# extract for number 2
-	move $t5, $v0
-	xor $s0, $t4, $t5		# in $s0, xor to find out sign
+	move $s1, $a0			# in $s1, (N1) store $a0
+	move $s2, $a1			# in $s2, (N2) store $a1
 
-	abs_val($a0)			# find the absolute value of N1, already in a0
+	result_sign($s1, $s2)	# get the sign of multiplying the two numbers
+	move $s0, $v0			# in $s0, (S) store the sign
+
+	abs_val($s1)			# find the absolute value of N1
 	move $s1, $v0
-
-	abs_val($a1)
+	abs_val($s2)			# find the absolute value of N2
+	move $s2, $v0
 
 	move $a0, $s1			# put |N1| in $a0
-	move $a1, $v0			# put |N2| in $a1
+	move $a1, $s2			# put |N2| in $a1
 
 	jal mul_unsigned		# do an unsigned multiplication
 
 	beq $s0, $zero, fi_mulop 	# if positive number, jump to end
-	twos_comp_64($v0, $v1)
+	twos_comp_64($v0, $v1)		# else switch to negative
 
 	fi_mulop:
-#	li $t0, '.' 	# THIS IS WHERE MULOP STARTS
-#
-#	move $s1, $a0			# in $s1, (N1) store $a0
-#	move $s2, $a1			# in $s2, (N2) store $a1
-#
-#	result_sign($s1, $s2)	# get the sign of multiplying the two numbers
-#	move $s0, $v0			# in $s0, (S) store the sign
-#
-#	abs_val($s1)			# find the absolute value of N1
-#	move $s1, $v0
-#	abs_val($s2)			# find the absolute value of N2
-#	move $s2, $v0
-#
-#	move $a0, $s1			# put |N1| in $a0
-#	move $a1, $s2			# put |N2| in $a1
-#
-#	jal mul_unsigned		# do an unsigned multiplication
-#
-#	beq $s0, $zero, fi_mulop 	# if positive number, jump to end
-#	twos_comp_64($v0, $v1)		# else switch to negative
-#
-#	fi_mulop:
 
 j end
 
