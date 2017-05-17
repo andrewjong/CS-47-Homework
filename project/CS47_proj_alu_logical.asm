@@ -175,58 +175,58 @@ mul_unsigned:
 jr $ra # end
 
 divop:
-	li $t0, '/'						# THIS IS WHERE DIVISION STARTS
-	move $s0, $zero				# in $s0, (I) counter = 0
-	move $s1, $a0				# in $s1, (Q) = dividend
-	move $s2, $a1				# in $s2, (D) = divisor
-	move $s3, $zero				# in $s3, (R) remainder = 0
-
-	result_sign($a0, $a1)		
-	move $s5, $v0				# in $s5, store the sign result of the operation
-	result_sign($a0, $zero)
-	move $s6, $v0				# in $s6, extract the sign bit of the first argument
-
-	abs_val($a0)
-	move $a0, $v0				# in $a0, put |$a0|
-	abs_val($a1)				
-	move $a1, $v0				# in $a1, put |$a1|
-
-	unsigned_div_loop:
-		sll $s3, $s3, 1			# R = R << 1
-		
-		li $t0, 31				
-		extract_n($s1, $t0)			# Q[31]
-		set_n_with($s1, $zero, $v0) # R[0] = Q[31]
-
-		sll $s1, $s1, 1			# Q = Q << 1
-
-		sub $s4, $s3, $s2		# in $s4, (S) = R - D
-
-		blez $s4, skip_set_remainder # S < 0?
-		move $s3, $s4			#  R = S
-		set_n($s1, $zero)		# Q[0] = 1
-
-		skip_set_remainder:
-		addi $s0, $s0, 1
-
-		li $t0, 32
-		bne $s0, $t0, unsigned_div_loop
-		move $v0, $s1			# in $v0, put the quotient
-		move $v1, $s3			# in $v1, put the remainder
-
-	quotient_sign:
-		beq $s5, $zero, remainder_sign 	# if result sign positive number, determine remainder sign
-		twos_comp($s1)			# take the two's complement on quotient
-		move $s1, $v0			# in $s1, (Q) put result
-
-	remainder_sign:
-		beq $s6, $zero, fi_divop 	# if result sign of first argument was 0, skip taking 2's comp
-		twos_comp($s6)
-		move $s3, $v0			# in $s3, (R) put result
-
-	fi_divop:
-		move $v0, $s1			# return values
-		move $v1, $s3
+#	li $t0, '/'						# THIS IS WHERE DIVISION STARTS
+#	move $s0, $zero				# in $s0, (I) counter = 0
+#	move $s1, $a0				# in $s1, (Q) = dividend
+#	move $s2, $a1				# in $s2, (D) = divisor
+#	move $s3, $zero				# in $s3, (R) remainder = 0
+#
+#	result_sign($a0, $a1)		
+#	move $s5, $v0				# in $s5, store the sign result of the operation
+#	result_sign($a0, $zero)
+#	move $s6, $v0				# in $s6, extract the sign bit of the first argument
+#
+#	abs_val($a0)
+#	move $a0, $v0				# in $a0, put |$a0|
+#	abs_val($a1)				
+#	move $a1, $v0				# in $a1, put |$a1|
+#
+#	unsigned_div_loop:
+#		sll $s3, $s3, 1			# R = R << 1
+#		
+#		li $t0, 31				
+#		extract_n($s1, $t0)			# Q[31]
+#		set_n_with($s1, $zero, $v0) # R[0] = Q[31]
+#
+#		sll $s1, $s1, 1			# Q = Q << 1
+#
+#		sub $s4, $s3, $s2		# in $s4, (S) = R - D
+#
+#		blez $s4, skip_set_remainder # S < 0?
+#		move $s3, $s4			#  R = S
+#		set_n($s1, $zero)		# Q[0] = 1
+#
+#		skip_set_remainder:
+#		addi $s0, $s0, 1
+#
+#		li $t0, 32
+#		bne $s0, $t0, unsigned_div_loop
+#		move $v0, $s1			# in $v0, put the quotient
+#		move $v1, $s3			# in $v1, put the remainder
+#
+#	quotient_sign:
+#		beq $s5, $zero, remainder_sign 	# if result sign positive number, determine remainder sign
+#		twos_comp($s1)			# take the two's complement on quotient
+#		move $s1, $v0			# in $s1, (Q) put result
+#
+#	remainder_sign:
+#		beq $s6, $zero, fi_divop 	# if result sign of first argument was 0, skip taking 2's comp
+#		twos_comp($s6)
+#		move $s3, $v0			# in $s3, (R) put result
+#
+#	fi_divop:
+#		move $v0, $s1			# return values
+#		move $v1, $s3
 j end
 
 end: 
