@@ -31,8 +31,8 @@ main2:
 	move $a0, $s0
 	move $a1, $s1
 	move $a2, $s2
-	result_sign($a0, $a1)
-	#twos_comp_64($a0, $a2)
+	jal au_logical
+	#twos_comp_64($a0, $a1)
 	#abs_val($a0)
 	#twos_comp($a0)
 	#jal twos_complement
