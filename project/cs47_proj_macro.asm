@@ -10,7 +10,7 @@
 .macro set_n($x, $pos)
     li $t0, 1
     sllv $v0, $t0, $pos
-    or $v0, $v0, $x		#
+    or $v0, $v0, $x		
 .end_macro
 
 # sets register at position with a 0 or 1
